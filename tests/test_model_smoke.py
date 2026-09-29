@@ -1,3 +1,5 @@
+import sys
+
 import torch
 
 from models.visnet_v2 import VisNetV2
@@ -28,3 +30,16 @@ def test_original_visnet_head_has_no_fusion_network():
 
     assert model.graph_processor is None
     assert model.fusion_net is None
+
+
+def test_five_fold_training_requires_command_line_options(monkeypatch, capsys):
+    import train_visnet_v2_5
+
+    def unexpected_training(*args, **kwargs):
+        raise AssertionError("Training started without command-line options")
+
+    monkeypatch.setattr(sys, "argv", ["train_visnet_v2_5.py"])
+    monkeypatch.setattr(train_visnet_v2_5, "load_and_preprocess_data", unexpected_training)
+    train_visnet_v2_5.main()
+
+    assert "usage: train_visnet_v2_5.py" in capsys.readouterr().out

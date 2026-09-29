@@ -314,10 +314,10 @@ class Trainer(object):
             fingerprints_list = [torch.LongTensor(f).to(self.device) for f in fingerprints_list]
             adjacencies_list = [torch.FloatTensor(a).to(self.device) for a in adjacencies_list]
             if train:
-                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]  # 修改为一维张量
+                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]
                 return [smiles_list, fingerprints_list, adjacencies_list, molecular_sizes_list, properties_list]
             else:
-                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]  # 修改为一维张量
+                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]
                 return [smiles_list, fingerprints_list, adjacencies_list, molecular_sizes_list, properties_list]
         else:  # 扩展格式 (smiles, fingerprints, adjacencies, molecular_sizes, additional_features, properties)
             smiles_list, fingerprints_list, adjacencies_list, molecular_sizes_list, additional_features_list, properties_list = zip(*data_batch_raw)
@@ -327,10 +327,10 @@ class Trainer(object):
             adjacencies_list = [torch.FloatTensor(a).to(self.device) for a in adjacencies_list]
             additional_features_list = [torch.FloatTensor(a).to(self.device) for a in additional_features_list]
             if train:
-                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]  # 修改为一维张量
+                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]
                 return [smiles_list, fingerprints_list, adjacencies_list, molecular_sizes_list, additional_features_list, properties_list]
             else:
-                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]  # 修改为一维张量
+                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]
                 return [smiles_list, fingerprints_list, adjacencies_list, molecular_sizes_list, additional_features_list, properties_list]
 
     def _prepare_visnet_batch(self, data_batch_raw, train):
@@ -364,7 +364,7 @@ class Trainer(object):
                     z_list.append(z)
                     pos_list.append(pos)
                     batch_indices_list.append(torch.full((z.size(0),), batch_idx, dtype=torch.long))
-                    y_list.append(torch.FloatTensor([property_value]))  # 修改为一维张量
+                    y_list.append(torch.FloatTensor([property_value]))
                     batch_idx += 1
                     atom_offset += z.size(0)
                     valid_count += 1
@@ -754,13 +754,13 @@ class Tester(object):
                             pred, _ = self.model(z_batch, pos_batch, batch_indices)
                             predicted_values = pred.cpu().numpy().flatten()
                         
+                        # 保持单样本批次和多样本批次的真实值均为一维数组。
+                        correct_values = y_batch.reshape(-1).cpu().numpy()
+
                         # 反标准化预测值和真实值
                         if self.property_mean is not None and self.property_std is not None:
                             predicted_values = predicted_values * self.property_std + self.property_mean
-                            correct_values = y_batch.squeeze().cpu().numpy() * self.property_std + self.property_mean
-                        else:
-                            # 确保y_batch被正确转换为一维数组
-                            correct_values = y_batch.squeeze().cpu().numpy() if y_batch.dim() > 1 else y_batch.cpu().numpy()
+                            correct_values = correct_values * self.property_std + self.property_mean
                         
                         # 检查预测值和真实值的对应性，过滤掉任何包含NaN或无穷大的样本
                         valid_mask = np.isfinite(predicted_values) & np.isfinite(correct_values)
@@ -815,8 +815,8 @@ class Tester(object):
             T = np.array(Ts)
             Y = np.array(Ys)
             mse = mean_squared_error(T, Y)
-            r2 = r2_score(T, Y)
-            pcc = np.corrcoef(T, Y)[0, 1]
+            r2 = r2_score(T, Y) if len(T) > 1 else float('nan')
+            pcc = np.corrcoef(T, Y)[0, 1] if len(T) > 1 else float('nan')
         else:
             mse = r2 = pcc = 0.0
         
@@ -989,10 +989,10 @@ class Tester(object):
             fingerprints_list = [torch.LongTensor(f).to(self.device) for f in fingerprints_list]
             adjacencies_list = [torch.FloatTensor(a).to(self.device) for a in adjacencies_list]
             if train:
-                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]  # 修改为一维张量
+                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]
                 return [smiles_list, fingerprints_list, adjacencies_list, molecular_sizes_list, properties_list]
             else:
-                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]  # 修改为一维张量
+                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]
                 return [smiles_list, fingerprints_list, adjacencies_list, molecular_sizes_list, properties_list]
         elif len(data_batch_raw[0]) == 7:  # 新的扩展格式 (smiles, fingerprints, adjacencies, molecular_sizes, physchem_features, toxicity_features, chromato_features, properties)
             smiles_list, fingerprints_list, adjacencies_list, molecular_sizes_list, physchem_features_list, toxicity_features_list, chromato_features_list, properties_list = zip(*data_batch_raw)
@@ -1004,10 +1004,10 @@ class Tester(object):
             toxicity_features_list = [torch.FloatTensor(a).to(self.device) for a in toxicity_features_list]
             chromato_features_list = [torch.FloatTensor(a).to(self.device) for a in chromato_features_list]
             if train:
-                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]  # 修改为一维张量
+                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]
                 return [smiles_list, fingerprints_list, adjacencies_list, molecular_sizes_list, physchem_features_list, toxicity_features_list, chromato_features_list, properties_list]
             else:
-                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]  # 修改为一维张量
+                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]
                 return [smiles_list, fingerprints_list, adjacencies_list, molecular_sizes_list, physchem_features_list, toxicity_features_list, chromato_features_list, properties_list]
         else:  # 扩展格式 (smiles, fingerprints, adjacencies, molecular_sizes, additional_features, properties)
             smiles_list, fingerprints_list, adjacencies_list, molecular_sizes_list, additional_features_list, properties_list = zip(*data_batch_raw)
@@ -1017,10 +1017,10 @@ class Tester(object):
             adjacencies_list = [torch.FloatTensor(a).to(self.device) for a in adjacencies_list]
             additional_features_list = [torch.FloatTensor(a).to(self.device) for a in additional_features_list]
             if train:
-                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]  # 修改为一维张量
+                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]
                 return [smiles_list, fingerprints_list, adjacencies_list, molecular_sizes_list, additional_features_list, properties_list]
             else:
-                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]  # 修改为一维张量
+                properties_list = [torch.FloatTensor([p]).to(self.device) for p in properties_list]
                 return [smiles_list, fingerprints_list, adjacencies_list, molecular_sizes_list, additional_features_list, properties_list]
 
     def save_MAEs(self, MAEs, filename):

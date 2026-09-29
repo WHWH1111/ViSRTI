@@ -98,7 +98,7 @@ def plot_predicted_vs_actual(file_test_result, cp_plot_file, property_mean=None,
         print("No valid predictions found. Skipping final evaluation and plotting.")
         return False
     
-    # 标准化处理（如果提供了标准化参数） # UPDATE 目前版本 Tester 中会进行反标准化。
+    # 按传入的训练统计量缩放绘图数值。
     if property_mean is not None and property_std is not None:
         res['Correct'] = (res['Correct'] - property_mean) / property_std
         res['Predict'] = (res['Predict'] - property_mean) / property_std

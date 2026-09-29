@@ -225,22 +225,21 @@ def main():
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / filename, target)
     lines = [
-        "本次只更新正模式 GP、负模式 GPT 的 SHAP 和逐步特征掩码图，未修改 Word 和后续图。",
+        "正模式 GP、负模式 GPT 的 SHAP 和逐步特征掩码结果。",
         "正模式 GP 不使用毒性编码器。Figure 2 对应 GPT 的毒性输出维度为正模式 64、负模式 128；两者中间层都是 64。",
         "未掩码 P 为四项：Monoiso_Mass、LogKow、LogP、Koc；T 为四项：IC50、48h-LC50、72h-EC50、96h-LC50。G 是分子图。",
-        "本轮使用既有训练集和开发集，正模式开发集 561 个样本，负模式 534 个样本。",
+        "使用固定训练集和开发集，正模式开发集 561 个样本，负模式 534 个样本。",
         "每个化合物使用自己的分子图；特征仅按训练时保存的参数标准化一次。SHAP 的背景取自训练集 50 个样本，随机种子 1234。",
         "穷举全部特征子集计算描述符的 Shapley 值，图结构固定。图中数值为标准化目标单位，CSV 另提供 RTI 单位。",
         "按未掩码模型开发集的平均绝对 SHAP 从低到高累计删项，每删一项重新训练。最高 150 轮、开发集 MAE 早停 20 轮，沿用原训练设置。",
         "候选模型开发集 MAE 比前一步变差就停止，保留前一步。初始 SHAP 排序固定，不根据试验结果改顺序。",
         "柱高直接由完整开发集预测计算。误差棒为 1,000 次有放回 Bootstrap 指标的标准差，所有步骤共用每次抽样的样本序号。",
         "Bootstrap 误差棒反映固定模型在该开发集上的抽样波动，不表示多次独立训练的波动，也不是模型筛选后的独立验证置信区间。",
-        "正 GP、负 GPT 是客户本轮指定的候选组合。此前开发集负模式 GPTC 的四项指标均优于 GPT，不能改称 GPT 由开发集全候选比较胜出。",
-        "原测试集结果已在前轮被查看，无法恢复为未被查看的独立测试集。本轮不读取测试响应，也不自动更新后续分析。",
-        "已有 SHAP 实现的共用分子图和重复标准化问题已在本轮分析入口修正；旧稿及旧图保持原状，供作者逐项替换。",
-        "负模式保留原训练计算标准化参数时使用的描述符记录；有效训练和开发样本按原分区冻结，已排除的失败分子直接跳过，不反复尝试构象生成，也不纳入性能评价。",
+        "分析范围限定为正 GP、负 GPT；不能据此称 GPT 是全部融合候选中的开发集最优配置。",
+        "测试集结果此前已被查看，不能视为从未查看的独立测试集。本分析不读取测试响应。",
+        "负模式标准化参数来自训练时使用的描述符记录；有效训练和开发样本按固定分区，已排除的失败分子不参与性能评价。",
         "SHAP 表示模型归因，不能证明因果关系；低重要性或一次删项改善，不能单独证明特征在其他数据上无用。",
-        "03_代码及配置中的代码按原仓库目录保存，用于原工程中的复现；正负模式保留模型文件夹包含实际权重、训练参数和本次删项选择记录。",
+        "03_代码及配置中的代码按仓库目录保存，用于工程复现；正负模式保留模型文件夹包含权重、训练参数和特征选择记录。",
         "各步配置记录保留了基准和所有已尝试步骤。02_绘图数据中的完整SHAP结果包含背景期望值和归因数组，可复核每个样本的归因之和。",
         "",
         "逐步掩码结果",
@@ -265,7 +264,7 @@ def main():
             shutil.copy2(Path(step["training_params"]), step_configs / ("第{:02d}步_训练参数.json".format(step["step"])))
         shutil.copy2(mode_dir / "masking_steps.json", step_configs / "各步指标与选择记录.json")
         shutil.copy2(mode_dir / "shap_result.json", data_dir / (mode + "模式_完整SHAP结果及核验.json"))
-    (output / "本次修改与数据使用说明.txt").write_text("\n".join(lines) + "\n", encoding="utf-8-sig")
+    (output / "图3逐步掩码结果与数据说明.txt").write_text("\n".join(lines) + "\n", encoding="utf-8-sig")
     write_json(output / "数据核验.json", {
         "passed": True, "partitions": {mode: len(payload[mode]["shap"]["smiles"]) for mode in payload},
         "metric_sources": "all_development_predictions", "error_bars": "paired_bootstrap_sd_1000",

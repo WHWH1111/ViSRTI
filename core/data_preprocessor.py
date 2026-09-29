@@ -240,8 +240,8 @@ def split_raw_data_if_needed(
         train_data = df_clean.iloc[train_indices]
         test_data = df_clean.iloc[test_indices]
     else:
-        # Preserve the author's original random holdout exactly: shuffle the
-        # cleaned table once with random_state=1234, then take the first 90%.
+        # Fixed random holdout: shuffle the cleaned table once, then take the
+        # first training fraction with the recorded random seed.
         shuffled = df_clean.sample(frac=1, random_state=random_state).reset_index(drop=True)
         train_count = int((1.0 - test_fraction) * len(shuffled))
         train_data = shuffled.iloc[:train_count]
@@ -285,7 +285,7 @@ def load_datasets(args, path, dataname, max_data):
     根据是否使用扩展模型加载不同的数据集
     """
     # 根据是否使用扩展模型加载不同的数据集
-    if args.model == 'extended':  # 修复：使用args.model == 'extended'而不是args.extended_model
+    if args.model == 'extended':
         # 根据特征配置选择特征
         feature_config = args.feature_config
             
@@ -335,7 +335,6 @@ def load_datasets(args, path, dataname, max_data):
         additional_features_dim = 0
         additional_features_mean, additional_features_std = None, None
 
-    # 使用工具函数替换原来的数据集拆分函数
     dev_split_seed = getattr(args, 'dev_split_seed', None)
     if dev_split_seed is None:
         dev_split_seed = (
@@ -355,7 +354,7 @@ def load_datasets(args, path, dataname, max_data):
     # 对于测试集，如果在调试模式下，限制测试集大小
     if args.debug_size is not None:
         test_size = max(10, int(args.debug_size * 0.1))  # 至少使用10个样本
-        if args.model == 'extended':  # 修复：使用args.model == 'extended'而不是args.extended_model
+        if args.model == 'extended':
             target_col_name = 'Pred_RTI_Negative_ESI' if 'neg' in dataname else 'Pred_RTI_Positive_ESI'
             dataset_test = pp.create_extended_dataset(
                 f'{dataname}_test_set.txt', 
@@ -363,13 +362,13 @@ def load_datasets(args, path, dataname, max_data):
                 dataname,
                 target_col_name,
                 test_size,
-                feature_config if args.model == 'extended' else None,  # 修复：使用args.model == 'extended'而不是args.extended_model
+                feature_config,
                 standardize=False  # 测试集不进行标准化，使用训练集的参数
             )
         else:
             dataset_test = pp.create_dataset(f'{dataname}_test_set.txt', os.path.join(path, dataname), dataname, test_size)
     else:
-        if args.model == 'extended':  # 修复：使用args.model == 'extended'而不是args.extended_model
+        if args.model == 'extended':
             target_col_name = 'Pred_RTI_Negative_ESI' if 'neg' in dataname else 'Pred_RTI_Positive_ESI'
             dataset_test = pp.create_extended_dataset(
                 f'{dataname}_test_set.txt', 
@@ -377,7 +376,7 @@ def load_datasets(args, path, dataname, max_data):
                 dataname,
                 target_col_name,
                 None,  # 不限制测试集大小
-                feature_config if args.model == 'extended' else None,  # 修复：使用args.model == 'extended'而不是args.extended_model
+                feature_config,
                 standardize=False  # 测试集不进行标准化，使用训练集的参数
             )
         else:
@@ -459,7 +458,7 @@ def filter_failed_molecules(dataset, preprocessed_data, cache, types, dataset_na
     return filtered_dataset
 
 
-def load_additional_features(smiles_list, dataname, standardize=False, input_file=None, feature_dataset_type=None):  # INFO
+def load_additional_features(smiles_list, dataname, standardize=False, input_file=None, feature_dataset_type=None):
     """
     为VisNetV2模型加载额外特征
     
@@ -477,8 +476,7 @@ def load_additional_features(smiles_list, dataname, standardize=False, input_fil
     # 确定数据集路径
     if input_file is not None:
         csv_path = input_file
-    # 原本的解析方式
-    elif 'neg' in dataname or feature_dataset_type and 'neg' in feature_dataset_type:  # 兼容旧数据集
+    elif 'neg' in dataname or feature_dataset_type and 'neg' in feature_dataset_type:
         csv_path = f'data/MMF-3/MMF_GNN_neg.csv'
     else:
         csv_path = f'data/MMF-3/MMF_GNN_pos.csv'

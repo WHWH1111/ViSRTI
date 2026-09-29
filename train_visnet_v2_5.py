@@ -178,12 +178,11 @@ def load_and_preprocess_data(args, device):
         fold_path = os.path.join(path, f"{args.cv_dataname}_5")
         # 实际的数据文件名仍使用原始dataname
         _visnet_train = "visnet_train_v2_" + args.cv_dataname
-        _visnet_test = _visnet_train    # INFO 好像可以直接合并起来
+        _visnet_test = _visnet_train
         target_column = 'Pred_RTI_Negative_ESI' if 'neg' in dataname.lower() else 'Pred_RTI_Positive_ESI'
     else:
         # 原始模式
         path = './data/MMF-3/'
-        # dataname = 'MMF_GNN_neg'    # INFO 数据集名称
         dataname = args.cv_dataname
         _visnet_train = "visnet_train_v2_" + dataname
         _visnet_test = "visnet_test_v2_" + dataname
@@ -688,7 +687,7 @@ def main():
                          help='Graph hidden dimension for VisNetV2 model')
     parser.add_argument('--visnet-v2-physchem-hidden-dim', type=int, default=128,
                          help='Physical chemistry hidden dimension for VisNetV2 model')
-    parser.add_argument('--visnet-v2-toxicity-hidden-dim', type=int, default=128,   # INFO pos-64 / neg-128
+    parser.add_argument('--visnet-v2-toxicity-hidden-dim', type=int, default=128,
                          help='Toxicity hidden dimension for VisNetV2 model')
     parser.add_argument('--visnet-v2-chromato-hidden-dim', type=int, default=32,
                          help='Chromatography hidden dimension for VisNetV2 model')
@@ -727,6 +726,9 @@ def main():
     parser.add_argument('--fold', type=int, choices=range(1, 6), default=None,
                         help='Specific fold to train (1-5), if not specified, train all folds sequentially')
 
+    if len(sys.argv) == 1:
+        parser.print_help()
+        return
     args = parser.parse_args()
     
     # 设置PyTorch内存管理参数以避免内存碎片
@@ -802,208 +804,5 @@ def main():
         train_model(model, data_dict, args, torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
     
 
-def run4debug():
-    """
-    使用硬编码参数运行VisNetV2模型训练，方便调试
-    示例用法，参数来自:
-    python train_visnet_v2_5.py --cross-validation --visnet-v2-feature-level graph_physchem_toxicity --standardize --loss-function l1 --batch-train 64 --standardize-features --visnet-v2-physchem-mask 1 1 1 0
-    """
-    import argparse
-    
-    # 创建参数解析器
-    parser = argparse.ArgumentParser(description='Train VisNetV2 Molecular Graph Neural Network')
-    
-    # 模拟命令行参数
-    args_list = [
-        '--cross-validation',
-        '--visnet-v2-feature-level', 'graph_physchem_toxicity',
-        '--standardize',
-        '--loss-function', 'l1',
-        '--batch-train', '64',
-        '--standardize-features',
-        '--visnet-v2-physchem-mask', '1', '1', '1', '0'
-    ]
-    
-    # 通用参数
-    parser.add_argument('-ds', '--debug-size', type=int, default=None, 
-                        help='Number of samples to use for debugging (default: None, use all data)')
-    parser.add_argument('-it', '--iteration', type=int, default=150,
-                        help='Number of training iterations (default: 150)')
-    parser.add_argument('--batch-train', type=int, default=256,
-                        help='Training batch size (default: 256)')
-    parser.add_argument('--batch-test', type=int, default=128,
-                        help='Test batch size (default: 128)')
-    parser.add_argument('--standardize', action='store_true',
-                        help='Whether to standardize the property values')
-    parser.add_argument('--standardize-features', action='store_true',
-                        help='Whether to standardize additional features for VisNetV2 model')
-    parser.add_argument('--split-strategy', type=str, default='scaffold',
-                        choices=['scaffold', 'random'],
-                        help='Train/dev split strategy (default: scaffold)')
-    parser.add_argument('--split-seed', type=int, default=1234,
-                        help='Fixed seed used for splitting and training (default: 1234)')
-
-    # 模型选择参数
-    parser.add_argument('--model', type=str, default='visnet_v2', choices=['visnet_v2'],
-                        help='Model type to use (default: visnet_v2)')
-    
-    # 优化器和调度器参数
-    parser.add_argument('--learning-rate', type=float, default=1e-4,
-                        help='Initial learning rate (default: 1e-4)')
-    parser.add_argument('--weight-decay', type=float, default=1e-5,
-                        help='Weight decay (L2 penalty) (default: 1e-5)')
-    parser.add_argument('--scheduler-patience', type=int, default=10,
-                        help='Scheduler patience (default: 10)')
-    parser.add_argument('--scheduler-factor', type=float, default=0.5,
-                        help='Scheduler factor (default: 0.5)')
-    parser.add_argument('--min-lr', type=float, default=1e-6,
-                        help='Minimum learning rate (default: 1e-6)')
-    parser.add_argument('--early-stopping-patience', type=int, default=50,
-                        help='Early stopping patience (default: 50)')
-    
-    # 损失函数参数
-    parser.add_argument('--loss-function', type=str, default='mse', choices=['mse', 'l1'],
-                        help='Loss function to use (default: mse)')
-    
-    # 内存优化参数
-    parser.add_argument('--max-split-size-mb', type=int, default=None,
-                        help='PyTorch max_split_size_mb to avoid memory fragmentation')
-    
-    # VisNetV2 模型参数
-    parser.add_argument('--visnet-v2-node-feature-dim', type=int, default=64,
-                         help='Node feature dimension for VisNetV2 model')
-    parser.add_argument('--visnet-v2-physchem-feature-dim', type=int, default=4,
-                         help='Input dimension of physical chemistry features for VisNetV2 model (default: 4)')
-    parser.add_argument('--visnet-v2-toxicity-feature-dim', type=int, default=4,
-                         help='Toxicity feature dimension for VisNetV2 model')
-    parser.add_argument('--visnet-v2-chromato-feature-dim', type=int, default=2,
-                         help='Chromatography feature dimension for VisNetV2 model')
-    parser.add_argument('--visnet-v2-graph-hidden-dim', type=int, default=512,
-                         help='Graph hidden dimension for VisNetV2 model')
-    parser.add_argument('--visnet-v2-physchem-hidden-dim', type=int, default=128,
-                         help='Physical chemistry hidden dimension for VisNetV2 model')
-    parser.add_argument('--visnet-v2-toxicity-hidden-dim', type=int, default=128,
-                         help='Toxicity hidden dimension for VisNetV2 model')
-    parser.add_argument('--visnet-v2-chromato-hidden-dim', type=int, default=32,
-                         help='Chromatography hidden dimension for VisNetV2 model')
-    parser.add_argument('--visnet-v2-toxicity-intermediate-dim', type=int, default=64,
-                         help='Toxicity intermediate dimension for VisNetV2 model (default: None, use effective dim)')
-    parser.add_argument('--visnet-v2-fusion-hidden-dims', type=int, nargs='+', default=[512, 256, 128],
-                         help='Fusion hidden dimensions for VisNetV2 model')
-    parser.add_argument('--visnet-v2-dropout-rate', type=float, default=0.0,
-                         help='Dropout rate for VisNetV2 model')
-    parser.add_argument('--visnet-v2-use-attention', action='store_true',
-                        help='Whether to use attention mechanism in VisNetV2')
-    parser.add_argument('--visnet-v2-use-gating', action='store_true',
-                        help='Whether to use gating mechanism in VisNetV2')
-    parser.add_argument('--visnet-v2-output-head', default='nested_mlp', choices=['nested_mlp'],
-                        help='Explicitly preserve the selected nested MLP output head')
-    parser.add_argument('--visnet-v2-feature-level', type=str, default='all',
-                        choices=['graph', 'graph_physchem', 'graph_physchem_toxicity', 'all'],
-                        help='Feature level for VisNetV2 model')
-    parser.add_argument('--visnet-v2-physchem-mask', type=int, nargs='+', default=None,
-                        help='Physical-chemical feature mask (1 for used, 0 for masked). '
-                             'Example: "--visnet-v2-physchem-mask 1 0 1 1" to exclude the second feature (e.g. KoC)')
-    parser.add_argument('--visnet-v2-toxicity-mask', type=int, nargs='+', default=None,
-                        help='Toxicity feature mask (1 for used, 0 for masked). '
-                             'Example: "--visnet-v2-toxicity-mask 1 0 1 1" to exclude the second feature')
-    parser.add_argument('--visnet-v2-chromato-mask', type=int, nargs='+', default=None,
-                        help='Chromatography feature mask (1 for used, 0 for masked). '
-                             'Example: "--visnet-v2-chromato-mask 1 0" to exclude the second feature')
-
-    # 交叉验证参数
-    parser.add_argument('--cross-validation', action='store_true',
-                        help='Enable cross validation mode')
-    parser.add_argument('--cv-path', type=str, default='./data/MMF-3',
-                        help='Base path for cross validation datasets (default: ./data/MMF-3)')
-    parser.add_argument('--cv-dataname', type=str, default='MMF_GNN_pos',
-                        help='Base dataset name for cross validation (default: MMF_GNN_pos)')
-    parser.add_argument('--fold', type=int, choices=range(1, 6), default=None,
-                        help='Specific fold to train (1-5), if not specified, train all folds sequentially')
-
-    # 解析模拟的命令行参数
-    args = parser.parse_args(args_list)
-    
-    # 设置PyTorch内存管理参数以避免内存碎片
-    if args.max_split_size_mb is not None:
-        os.environ['PYTORCH_CUDA_ALLOC_CONF'] = f'max_split_size_mb:{args.max_split_size_mb}'
-        print(f"Set PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:{args.max_split_size_mb}")
-    
-    random.seed(args.split_seed)
-    np.random.seed(args.split_seed)
-    torch.manual_seed(args.split_seed)
-
-    # 启用CUDA内存优化
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed_all(args.split_seed)
-        torch.backends.cudnn.benchmark = False
-        torch.backends.cudnn.deterministic = True
-        # 设置环境变量以减少内存碎片
-        os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:128'
-    
-    # 处理交叉验证模式
-    if args.cross_validation:
-        # 如果指定了特定fold，则只训练该fold
-        if args.fold is not None:
-            folds_to_train = [args.fold]
-        else:
-            # 默认训练所有folds (1-5)
-            folds_to_train = list(range(1, 6))
-            
-        # 保存原始工作目录
-        original_cwd = os.getcwd()
-        
-        # 遍历执行每个fold的训练
-        for fold in folds_to_train:
-            print(f"\n{'='*50}")
-            print(f"Training Fold {fold}")
-            print(f"{'='*50}")
-            
-            # 切换到对应的fold目录
-            fold_dir = os.path.join(args.cv_path, f"{args.cv_dataname}_5", f"fold_{fold}")
-            if not os.path.exists(fold_dir):
-                print(f"Error: Fold directory {fold_dir} does not exist!")
-                continue
-                
-            print(f"Changing to fold directory: {fold_dir}")
-            os.chdir(fold_dir)
-            
-            try:
-                # 创建新的args对象副本以避免修改原始args
-                import copy
-                fold_args = copy.deepcopy(args)
-                fold_args.fold = fold
-                
-                # 加载和预处理数据
-                data_dict = load_and_preprocess_data(fold_args, device=torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
-                
-                # 初始化VisNetV2模型
-                model = get_model(fold_args, torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
-                
-                # 训练模型
-                train_model(model, data_dict, fold_args, torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
-            finally:
-                # 确保返回原始目录
-                os.chdir(original_cwd)
-                print(f"Returned to original directory: {original_cwd}")
-    else:
-        # 原始单次训练模式
-        # 加载和预处理数据
-        data_dict = load_and_preprocess_data(args, device=torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
-        
-        # 初始化VisNetV2模型
-        model = get_model(args, torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
-        
-        # 训练模型
-        train_model(model, data_dict, args, torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
-
-
-
 if __name__ == "__main__":
-    # 检查是否有命令行参数传入
-    if len(sys.argv) > 1:
-        # 如果有命令行参数，则调用main函数处理
-        main()
-    else:
-        # 如果没有命令行参数，则调用run4debug函数进行调试
-        run4debug()
+    main()

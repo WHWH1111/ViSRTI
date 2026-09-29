@@ -55,7 +55,7 @@ def test_missing_calibration_does_not_block_scaffold(controller, monkeypatch, re
 def test_resume_after_inputs_only_runs_calibration_and_repackages(controller, monkeypatch):
     fake_processes(controller, monkeypatch, False)
     controller.run(SimpleNamespace(resume=False))
-    input_file = controller.ROOT / "修改部分内容/07_最终模型后续分析/03_校准输入待补/图6绘制所需的23个物质输入_待作者确认.csv"
+    input_file = controller.ROOT / "outputs/final_model_delivery_seed1234/03_校准输入待补/图6绘制所需的23个物质输入_待作者确认.csv"
     input_file.parent.mkdir(parents=True)
     input_file.write_text("compound_id\n", encoding="utf-8")
     calls = fake_processes(controller, monkeypatch, True)
@@ -70,7 +70,7 @@ def test_stage_failure_resumes_without_repeating_predictions(controller, monkeyp
     fake_processes(controller, monkeypatch, True, fail_stage="plot_final_masked_models.py")
     with pytest.raises(RuntimeError, match="fixed_test_figures failed"):
         controller.run(SimpleNamespace(resume=False))
-    input_file = controller.ROOT / "修改部分内容/07_最终模型后续分析/03_校准输入待补/图6绘制所需的23个物质输入_待作者确认.csv"
+    input_file = controller.ROOT / "outputs/final_model_delivery_seed1234/03_校准输入待补/图6绘制所需的23个物质输入_待作者确认.csv"
     input_file.parent.mkdir(parents=True)
     input_file.write_text("compound_id\n", encoding="utf-8")
     calls = fake_processes(controller, monkeypatch, True)

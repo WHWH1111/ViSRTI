@@ -207,7 +207,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path, default=ROOT / "outputs/feature_fusion_random_seed1234")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "outputs/gp_gpt_masking_dev_seed1234")
-    parser.add_argument("--delivery", type=Path, default=ROOT / "修改部分内容/06_GP_GPT逐步掩码分析")
+    parser.add_argument("--delivery", type=Path, default=ROOT / "outputs/gp_gpt_masking_figures_seed1234")
     run(parser.parse_args())
 
 

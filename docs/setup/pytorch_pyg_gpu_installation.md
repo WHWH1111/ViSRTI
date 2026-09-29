@@ -1,6 +1,6 @@
 # PyTorch 与 PyG GPU 环境
 
-本项目只以仓库根目录的 `environment.yml` 作为依赖版本来源。目标环境为 Windows、Python 3.8.20、PyTorch 1.13.1 和 CUDA 11.6；不要再按旧文档安装 CUDA 11.8 或 PyTorch 2.x。
+仓库根目录的 `environment.yml` 是依赖版本来源。运行环境为 Windows、Python 3.8.20、PyTorch 1.13.1 和 CUDA 11.6，PyG 扩展与这一组版本配套。
 
 ## 创建或更新环境
 

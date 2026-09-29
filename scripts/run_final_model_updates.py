@@ -57,7 +57,7 @@ def controller_lock(directory):
 
 def run(args):
     output = ROOT / "outputs/final_masked_models_seed1234"
-    delivery = ROOT / "修改部分内容/07_最终模型后续分析"
+    delivery = ROOT / "outputs/final_model_delivery_seed1234"
     mask_run = ROOT / "outputs/gp_gpt_masking_dev_seed1234"
     state_path = output / "run_status.json"
     output.mkdir(parents=True, exist_ok=True)

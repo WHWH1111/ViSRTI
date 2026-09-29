@@ -1,6 +1,6 @@
 # ViSRTI
 
-ViSRTI uses molecular structure and optional descriptors to approximate the **NORMAN-predicted retention time index (RTI)** in positive and negative ionization modes. The target columns in the released CSV files are precomputed predictions, not experimental RTI measurements. The 21 standards used for laboratory RT–RTI calibration and the BaP/BeP case compounds are not an independent experimental RTI test set.
+ViSRTI predicts positive- and negative-ionization retention time indices (RTI) from molecular structure and optional descriptors. The training targets are **NORMAN-predicted RTI**, not experimental measurements.
 
 ## Start here
 
@@ -22,7 +22,13 @@ To make a quick prediction with the released final positive-mode checkpoint, run
 python predict_visnet_v2.py --model_path checkpoints/pos_GP_mask_Koc_LogP/best.pt --params_path checkpoints/pos_GP_mask_Koc_LogP/training_params.json --input_file data/MMF-3/MMF_GNN_pos.csv --output_dir outputs/predict_pos --max_items 5
 ```
 
-For negative mode, use `checkpoints/neg_GPT/` and `MMF_GNN_neg.csv`. Input CSVs need SMILES plus the descriptors active in the chosen model; missing descriptor handling follows the training code and should be checked before interpreting a new prediction. Full commands and a file-by-file guide are in [代码导览](docs/代码导览.md).
+For negative mode:
+
+```powershell
+python predict_visnet_v2.py --model_path checkpoints/neg_GPT/best.pt --params_path checkpoints/neg_GPT/training_params.json --input_file data/MMF-3/MMF_GNN_neg.csv --output_dir outputs/predict_neg --max_items 5
+```
+
+Input CSVs need SMILES and the descriptors used by the selected model. The preprocessing code fills missing descriptor values with zero, so check these fields before interpreting predictions for new compounds. The script reports evaluation metrics and an actual-versus-predicted plot only when at least two predictions are available and each has an RTI label; an unlabeled CSV still yields predictions. For the full workflow and each Python file's role, see [代码导览](docs/代码导览.md).
 
 ## Data, splits, and results
 
@@ -37,23 +43,22 @@ For negative mode, use `checkpoints/neg_GPT/` and `MMF_GNN_neg.csv`. Input CSVs 
 | `results/final_masked_scaffold_seed1234/` | Fold metrics, pooled out-of-fold predictions, category metrics, and Figure 5 source data. |
 | `results/figure_source_data/`, `results/figures/` | Figure 3, Figure 4, Figure 5, and Figure S5 plotting data and vector figures. |
 
-The split manifests record seed 1234, source-file SHA-256, counts, and scaffold overlap checks. Their `source_file` paths and the released checkpoint parameter paths were made relative for this publication copy; the original source hashes and model-weight hashes are retained. Do not compare the publication JSON files byte-for-byte with the original machine-local manifests.
-Any `original_run/` entry in a results CSV is a historical log or experiment identifier, not a file included in this release. The numerical columns and per-sample predictions are unchanged.
+The split manifests record seed 1234, source-file SHA-256, sample counts, and scaffold overlap checks. Paths are repository-relative. An `original_run` column in a results CSV identifies its source experiment; it is not an input path.
 
 ## Model workflow
 
-The four feature levels are G (molecular graph), GP (graph + physicochemical features), GPT (adds toxicity features), and GPTC (adds chromatographic features). `train_visnet_v2.py` trains one configuration; `scripts/run_feature_fusion_reproduction.ps1` runs the fixed random-split G → GP → GPT → GPTC comparison. The selected positive candidate is GP with Koc and LogP masked; the selected negative candidate is unmasked GPT. `scripts/run_gp_gpt_masking.py` ranks auxiliary features with SHAP and stops deletion when development-set MAE first worsens. `scripts/run_final_model_updates.py` computes the downstream fixed-test analyses and calls `scripts/run_selected_model_scaffold_cv.ps1` for five-fold structural checks. The latter must use the frozen `selection_manifest.json`; it is **not** a new model-selection search.
+The four feature levels are G (molecular graph), GP (graph + physicochemical features), GPT (adds toxicity features), and GPTC (adds chromatographic features). `train_visnet_v2.py` trains one configuration; `scripts/run_feature_fusion_reproduction.ps1` runs the fixed random-split G → GP → GPT → GPTC comparison. The final positive model is GP with Koc and LogP masked; the final negative model is unmasked GPT. `scripts/run_gp_gpt_masking.py` ranks auxiliary features with development-set SHAP and stops removal when development MAE first worsens. `scripts/run_final_model_updates.py` produces fixed-test analyses and calls `scripts/run_selected_model_scaffold_cv.ps1` for five-fold scaffold evaluation. The reported selection is in `results/final_masked_models_seed1234/selection_manifest.json`; a new run freezes its own manifest under `outputs/final_masked_models_seed1234/`.
 
-The GP/GPT candidate choice was specified after earlier test results had been inspected. Development-set MAE controlled only the subsequent masking decision, so the fixed-test results should not be described as untouched evidence for choosing GP over every alternative. The scaffold runs assess robustness of the fixed configuration and are not nested selection cross-validation.
+GP and GPT were chosen as masking candidates after earlier test results had been inspected. Development MAE selected masks within those candidates. The fixed-test metrics report the resulting models; they are not an untouched comparison across all fusion candidates. The scaffold runs assess the fixed configurations rather than performing nested model selection.
 
-For an overview of each `.py` file and the order to run them, read [代码导览](docs/代码导览.md). The `results/` directory is a read-only record of the reported run; new executions write to ignored `outputs/` directories. Do not overwrite published results.
+For an overview of each `.py` file and the execution order, read [代码导览](docs/代码导览.md). `results/` contains the reported run; new executions write to the ignored `outputs/` directory.
 
 The manuscript's repository-path wording is in [Data and Software Availability](docs/Data_and_Software_Availability.md).
 
-The released baseline CSVs allow the reported predictions and metrics to be checked. Baseline checkpoints and temporary graph caches are not shipped; running those models again requires retraining after the G experiment. The historical K/M workbook and Supporting Information comparison in `scripts/data-val/aggregate_baseline_results.py` also requires the original external workbooks, which are not included.
+The baseline CSVs contain predictions and metrics. Baseline checkpoints and graph caches are not included; baseline inference requires retraining. `scripts/data-val/aggregate_baseline_results.py` needs the external K/M workbooks and Supporting Information to repeat their comparison.
 
 ## Scope of experimental data
 
-This repository does not supply an independent experimental RTI benchmark. The 21 calibration standards and BaP/BeP case information are described in the Supporting Information; the 23-compound experimental workbook is not included here. The prediction and calibration code is provided, but reproducing laboratory-specific RT–RTI calibration requires confirmed experimental inputs.
+The Supporting Information describes 21 laboratory calibration standards and the separate BaP/BeP case study. These compounds do not form an independent experimental RTI test set. The experimental workbook is not included; laboratory-specific RT–RTI calibration requires its confirmed inputs.
 
 Project code is distributed under the [MIT license](LICENSE). The NORMAN-derived data carry separate [source attribution and CC BY 4.0 reuse terms](DATA_ATTRIBUTION.md); [third-party code notices](THIRD_PARTY_NOTICES.md) are also included.

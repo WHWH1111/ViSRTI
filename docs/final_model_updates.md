@@ -1,72 +1,32 @@
-# Final masked-model analyses
+# Final-model evaluation
 
-This is the continuation of the GP-positive/GPT-negative masking experiment.
-Do not restart `scripts/run_gp_gpt_masking.py`. The final-model controller waits
-for that experiment to finish before it opens held-out responses.
+The released selection is [`results/final_masked_models_seed1234/selection_manifest.json`](../results/final_masked_models_seed1234/selection_manifest.json). It identifies the positive GP model with Koc and LogP masked and the negative GPT model without masking. The matching weights and training parameters are in `checkpoints/`. Figure 3, Figure 4, Figure S5 and the five-fold scaffold evaluation use these configurations.
 
-## One selected configuration
+## Reproduce the analysis
 
-`outputs/final_masked_models_seed1234/selection_manifest.json` records the
-development-MAE stopping decision, exact masks, checkpoints and training settings.
-All new Figures 3, 4, S5 and scaffold runs read this selection. GP/GPT were
-requested candidates after earlier test results were inspected; GPT is not the
-winner of the earlier full development-set comparison, which favored GPTC.
-
-The positive candidate has four P descriptors and no T branch; the negative
-candidate has four P plus four T descriptors and a 128-dimensional T output.
-Masks retain input dimensions and suppress descriptor values in the model.
-
-## Execution
+Create the environment in `README.md`, then run the feature-fusion and development-set masking steps described in [Development-set SHAP and feature masking](gp_gpt_masking_analysis.md). From the repository root, run:
 
 ```powershell
-python scripts/data-val/evaluate_final_masked_models.py --preflight-development
 python scripts/run_final_model_updates.py
 ```
 
-Run only one controller; an operating-system file lock prevents duplicates.
-Inspect the recorded process before using `--resume` after a failure. It does
-not repeat completed masking training or scaffold folds. When missing calibration
-inputs are completed, resume runs only that unfinished stage, its figure export
-and delivery assembly. Partial calibration exports can be recomputed only for
-the same input file and frozen selection; completed predictions are reused.
+The controller reads the completed masking run from `outputs/gp_gpt_masking_dev_seed1234/`. It freezes that run's chosen masks in `outputs/final_masked_models_seed1234/selection_manifest.json`, computes fixed-test predictions and SHAP, exports figures, and trains five scaffold folds per mode. New calculations go to `outputs/final_masked_models_seed1234/` and `outputs/final_masked_scaffold_seed1234/`; figures and Chinese-named source tables go to `outputs/final_model_delivery_seed1234/`. The committed `results/` files record the reported run and remain separate from new output.
 
-The stages are development-mask freeze, fixed-test predictions and exact
-descriptor SHAP, fixed-test figures, calibration-input checks and (when complete)
-Figure 6a-b, ten scaffold training runs, then delivery assembly. Missing calibration
-inputs do not block scaffold training. The controller uses the active Python
-environment; this project targets `pytorch38-gpu`.
+The controller permits one active process. If an interrupted run has no active process, `python scripts/run_final_model_updates.py --resume` continues from its recorded completed stages. The run state and logs are under `outputs/final_masked_models_seed1234/`.
 
-## Figures and data
+## Reported results
 
-- Figure 2 and the accepted architecture comparison remain unchanged.
-- Figure 3 shows full fixed-test metrics for each already-selected masking step,
-  without bootstrap or error bars. Test values never change the retained mask.
-  Its displayed test SHAP is descriptive; masking order came from development
-  SHAP, and a test-derived ranking must not replace that order.
-- Figure S5 uses the selected checkpoint's own training history and predictions.
-- Figure 4 uses the same held-out compounds for class metrics and class SHAP.
-  The ten frozen categories overlap. Normalize the class mean absolute SHAP
-  within each row across retained descriptors; this does not establish causality.
-- Figure 5 uses out-of-fold scaffold predictions. Report mean/SD across folds
-  separately from metrics pooled across all out-of-fold predictions. This is
-  fixed-configuration structural robustness, not nested feature-selection CV.
-- Figure 6 requires author-confirmed structures, descriptors and mode-specific
-  calibrant lists. Predict the 21 standards and two cases with the selected model;
-  refit RT against newly predicted RTI. BaP/BeP never enter calibration fitting.
-  `scripts/plt/plot_calibration_results.py` preserves the original axes (measured
-  RT horizontally, predicted RTI vertically) using the parametric line
-  `RT = intercept + slope * RTI`. It does not replace this with an inverse OLS fit.
-  Any calibration intervals use actual residuals, not fabricated bootstrap data.
+| Output | Calculation |
+| --- | --- |
+| Figure 3 | Four metrics from each full fixed-test set after each evaluated masking step; no bootstrap or error bars. Development MAE, not these test metrics, determines the retained mask. |
+| Figure 4 | Ten predefined, overlapping chemical categories on the same fixed-test predictions; class metrics and row-wise 0–1 normalized mean absolute SHAP. |
+| Figure S5 | Training history and prediction scatter from the selected checkpoint for each mode. |
+| Figure 5 | Five scaffold folds per mode using the frozen configuration; fold mean/SD and metrics pooled over valid out-of-fold predictions are separate statistics. |
 
-Each SHAP explanation keeps that sample's own molecular graph, applies stored
-training standardization once and uses 50 training-background compounds. Background
-selection is not bootstrap resampling of reported performance.
+The five-fold runs test structural robustness of the selected configuration; they do not repeat feature selection within each fold. Two negative-mode compounds failed graph processing, leaving 5,931 valid out-of-fold predictions from 5,933 source rows. Category SHAP shows relative model reliance within each category, not a causal effect.
 
-## Delivery boundary
+## Experimental RT–RTI calibration
 
-`修改部分内容/07_最终模型后续分析/` holds the new figures, Chinese-named source
-data, final models, code, changes and the outstanding calibration input sheet.
-Older outputs remain historical evidence, not interchangeable final-model data.
-Word documents are not edited in this workflow. Numerical checks and actual
-preview inspection are required before marking figures reviewed; missing
-calibration inputs must remain visible rather than being replaced by old predictions.
+The repository does not include the confirmed experimental inputs needed to regenerate Figure 6. `scripts/data-val/predict_calibration_samples.py` can predict RTI for the 21 standards and two BaP/BeP case compounds once their structures, descriptors, measured RT and mode-specific calibration membership are supplied. Calibration fits measured RT against predicted RTI using the 21 standards; the two case compounds stay out of that fit. `scripts/plt/plot_calibration_results.py` displays measured RT on the horizontal axis and RTI on the vertical axis. Any confidence or prediction intervals use the fitted residuals.
+
+GP and GPT were selected as masking candidates after exploratory test results had been inspected. Development MAE governs the subsequent masking steps, while fixed-test results describe the resulting models. See the [masking method](gp_gpt_masking_analysis.md) for the selection history.

@@ -22,7 +22,6 @@ except AttributeError:
     ETKDG_PARAMS.randomSeed = 1234
     ETKDG_VERSION_USED = "ETKDGv2 (fallback)"
 
-# 更新bonds字典以包含更多键类型，未知键类型将被视为单键
 bonds = {BondType.SINGLE: 0, BondType.DOUBLE: 1, BondType.TRIPLE: 2, BondType.AROMATIC: 3, BondType.DATIVE: 0}
 
 
@@ -211,7 +210,7 @@ class MoleculeCache:
         self.cache_data = self._load_cache()
         self.cache_hits = 0
         self.cache_misses = 0
-        self.added_count = 0  # 新增计数器
+        self.added_count = 0
         self.failed_smiles = set()  # 用于记录处理失败的 SMILES
         
         # 添加线程锁以支持多线程操作

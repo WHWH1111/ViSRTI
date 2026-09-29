@@ -291,7 +291,7 @@ class VisNetV2(nn.Module):
         if physchem_features is not None and self.physchem_processor is not None:
             physchem_features = physchem_features.to(device)
             # 应用特征掩码（如果提供了掩码）
-            if self.physchem_feature_mask is not None and physchem_features.shape[1] != self.physchem_effective_dim:    # UPDATE 临时处理。
+            if self.physchem_feature_mask is not None and physchem_features.shape[1] != self.physchem_effective_dim:
                 # 使用布尔索引选择特征
                 mask = torch.tensor(self.physchem_feature_mask, dtype=torch.bool, device=device)
                 physchem_features = physchem_features[:, mask]

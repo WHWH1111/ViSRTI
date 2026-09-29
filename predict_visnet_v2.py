@@ -310,6 +310,7 @@ def predict_dataset(model, dataset, device, batch_size=64, params=None, cache_na
     
     # 使用Tester进行预测
     MAE, MSE, R2, PCC, predictions = tester.test_regressor(dataset)
+    target_available = {item['smiles']: item.get('target_available', True) for item in dataset}
     
     # 解析预测结果
     pred_lines = predictions.strip().split('\n')
@@ -321,7 +322,8 @@ def predict_dataset(model, dataset, device, batch_size=64, params=None, cache_na
         if len(parts) == 3:
             smiles, true_value, pred_value = parts
             try:
-                parsed_predictions.append((smiles, float(pred_value), float(true_value)))
+                actual = float(true_value) if target_available.get(smiles, True) else None
+                parsed_predictions.append((smiles, float(pred_value), actual))
             except ValueError:
                 # 如果转换失败，跳过该行
                 print(f"Warning: Skipping invalid prediction for {smiles} (true: {true_value}, pred: {pred_value})")
@@ -346,13 +348,13 @@ def load_and_process_dataset_with_features(input_file, params, dataset_type=None
     if dataset_file is None:
         if dataset_type == "train":
             dataset_file = f"data/MMF-3/{dataname}/{dataname}_train_set.txt"
-            cache_name = f"visnet_train_v2_{dataname}"  # 修改缓存名称
+            cache_name = f"visnet_train_v2_{dataname}"
         elif dataset_type == "dev":
             dataset_file = f"data/MMF-3/{dataname}/{dataname}_dev_set.txt"
-            cache_name = f"visnet_dev_v2_{dataname}"   # 修改缓存名称
+            cache_name = f"visnet_dev_v2_{dataname}"
         elif dataset_type == "test":
             dataset_file = f"data/MMF-3/{dataname}/{dataname}_test_set.txt"
-            cache_name = f"visnet_test_v2_{dataname}"  # 修改缓存名称
+            cache_name = f"visnet_test_v2_{dataname}"
         else:  # 当dataset_type未指定或者不是预设值时，直接从CSV文件中读取
             dataset_file = None  # 不使用特定的数据集文件
             # 从输入文件路径中提取文件名作为标签
@@ -363,6 +365,7 @@ def load_and_process_dataset_with_features(input_file, params, dataset_type=None
     
     if dataset_file:
         print(f"Loading {dataset_type} dataset from {dataset_file}")
+        target_available = True
         
         # 读取训练/测试集文件中的SMILES
         smiles_list = []
@@ -379,11 +382,13 @@ def load_and_process_dataset_with_features(input_file, params, dataset_type=None
         df = pd.read_csv(input_file)
         smiles_list = df['SMILES'].tolist()
         # smiles_list = df['MS_Ready_SMILES'].tolist()
-        # 尝试获取目标值列，如果没有则填充为0
+        # 无目标列时仅为模型批处理提供占位值，不作为真实值输出。
         if target_column in df.columns:
             target_values = df[target_column].tolist()
+            target_available = True
         else:
             target_values = [0.0] * len(smiles_list)
+            target_available = False
             print(f"Warning: Target column '{target_column}' not found in CSV file")
     
     # 如果指定了pass_items，则跳过前面的项目
@@ -396,7 +401,7 @@ def load_and_process_dataset_with_features(input_file, params, dataset_type=None
     if max_data is not None:
         smiles_list = smiles_list[:(max_data - pass_items) if pass_items else max_data]
         target_values = target_values[:(max_data - pass_items) if pass_items else max_data]
-        print(f"Processing only {(max_data - pass_items) if pass_items else max_data} samples for debugging")
+        print(f"Processing {(max_data - pass_items) if pass_items else max_data} selected samples")
     
     train_cache = MoleculeCache(cache_name)
     types = ATOM_TYPES
@@ -407,7 +412,8 @@ def load_and_process_dataset_with_features(input_file, params, dataset_type=None
     skipped_count = 0
     
     preprocessed_data = {}
-    pbar = tqdm(smiles_list, desc=f"Preprocessing {dataset_type} data")
+    dataset_label = dataset_type or 'all'
+    pbar = tqdm(smiles_list, desc=f"Preprocessing {dataset_label} data")
     for smiles in pbar:
         # 首先检查是否之前已经标记为失败
         if smiles in train_cache.failed_smiles:
@@ -497,7 +503,7 @@ def load_and_process_dataset_with_features(input_file, params, dataset_type=None
     df = pd.read_csv(input_file)
     smiles_to_row = {row['SMILES']: row for _, row in df.iterrows()}
     
-    for i, smiles in enumerate(smiles_list):  # 修复：使用smiles_list而不是preprocessed_data.keys()
+    for i, smiles in enumerate(smiles_list):
         # 检查SMILES是否在预处理数据中
         if smiles not in preprocessed_data:
             continue
@@ -509,6 +515,7 @@ def load_and_process_dataset_with_features(input_file, params, dataset_type=None
         # 标准化属性值（与训练时保持一致）
         standardized_property_value = (target_values[i] - property_mean) / property_std
         data['property_value'] = standardized_property_value
+        data['target_available'] = target_available
         
         # 添加额外特征
         if smiles in smiles_to_row:
@@ -540,7 +547,7 @@ def load_and_process_dataset_with_features(input_file, params, dataset_type=None
             data_dict['chromato_features'] = None
         # 如果是'all'级别，则保留所有特征
     
-    print(f"Preprocessed {dataset_type} dataset: {len(smiles_list)} -> {len(additional_dataset)}")
+    print(f"Preprocessed {dataset_label} dataset: {len(smiles_list)} -> {len(additional_dataset)}")
     return additional_dataset
 
 
@@ -653,12 +660,12 @@ def plot_pred_vs_actual(predictions, output_path, property_mean=0, property_std=
     text_y1 = max_plot - 0.05 * (max_plot - min_plot)
     text_y2 = max_plot - 0.15 * (max_plot - min_plot)
     text_y3 = max_plot - 0.25 * (max_plot - min_plot)
-    text_y4 = max_plot - 0.35 * (max_plot - min_plot)  # 新增一行用于显示项目计数
+    text_y4 = max_plot - 0.35 * (max_plot - min_plot)
     
     plt.text(text_x, text_y1, f'R² = {r2:.4f}', fontsize=12)
     plt.text(text_x, text_y2, f'MAE = {mae:.4f}', fontsize=12)
     plt.text(text_x, text_y3, f'RMSE = {rmse_val:.4f}', fontsize=12)
-    plt.text(text_x, text_y4, f'Items = {len(y_true)}', fontsize=12)  # 添加项目计数标签
+    plt.text(text_x, text_y4, f'Items = {len(y_true)}', fontsize=12)
     
     # 设置坐标轴范围
     plt.xlim(min_plot, max_plot)
@@ -689,7 +696,7 @@ def main():
     parser.add_argument('--max_items', type=int, help='Maximum number of items to process (useful for testing)')
     parser.add_argument('--pass_items', type=int, help='Number of items to skip at the beginning of the dataset')
     
-    ## INFO 针对 5 fold 实验的扩展。
+    # 支持指定五折数据文件和缓存名。
     parser.add_argument('--dataset_file', type=str, default=None, help='Custom dataset file path')
     parser.add_argument('--cache_name', type=str, default=None, help='Custom cache name')
     
@@ -698,7 +705,7 @@ def main():
     # 确保输出目录存在
     os.makedirs(args.output_dir, exist_ok=True)
     
-    # 设置设备z
+    # 设置推理设备
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'Using device: {device}')
     
@@ -716,7 +723,8 @@ def main():
     print("Model loaded successfully")
     
     # 处理数据集，使用指定的数据集类型
-    print(f"Processing {args.dataset_type} dataset...")
+    dataset_label = args.dataset_type or 'all'
+    print(f"Processing {dataset_label} dataset...")
     dataset = load_and_process_dataset_with_features(args.input_file, params, args.dataset_type, args.max_items, args.pass_items, args.dataset_file, args.cache_name)
     
     # 进行预测
@@ -724,6 +732,8 @@ def main():
     input_filename = os.path.splitext(os.path.basename(args.input_file))[0]
     cache_name = f"visnet_predict_v2_{input_filename}"  # 使用预测缓存名称
     predictions = predict_dataset(model, dataset, device, args.batch_size, params, cache_name)
+    if not predictions:
+        raise RuntimeError("No predictions were generated; check preprocessing and inference errors.")
     
     # 获取标准化参数
     property_mean = params.get('property_mean', 0)
@@ -755,31 +765,33 @@ def main():
         print("No recognized ID column found in input file")
     
     # 保存预测结果到CSV文件
-    predictions_file = os.path.join(output_subdir, f"{args.dataset_type}_{os.path.splitext(os.path.basename(args.input_file))[0]}_predictions.csv")
+    predictions_file = os.path.join(output_subdir, f"{dataset_label}_{os.path.splitext(os.path.basename(args.input_file))[0]}_predictions.csv")
     save_predictions(predictions, predictions_file, id_mapping if id_mapping else None)
     
-    print(f"Saved predictions to {predictions_file}")
-    
-    # 计算并保存评估指标（在标准化空间中计算）
-    print("Calculating metrics...")
-    metrics = calculate_metrics(predictions, property_mean, property_std)
-    
-    print("Metrics:")
-    for key, value in metrics.items():
-        if isinstance(value, float):
-            print(f"  {key}: {value:.4f}")
-        else:
-            print(f"  {key}: {value}")
-    
-    metrics_file = os.path.join(output_subdir, f"{args.dataset_type}_{os.path.splitext(os.path.basename(args.input_file))[0]}_metrics.json")
-    with open(metrics_file, 'w') as f:
-        json.dump(metrics, f, indent=2)
-    
-    print(f"Saved metrics to {metrics_file}")
-    
-    # 绘制预测值vs实际值散点图
-    plot_file = os.path.join(output_subdir, f"{args.dataset_type}_{os.path.splitext(os.path.basename(args.input_file))[0]}_pred_vs_actual.png")
-    plot_pred_vs_actual(predictions, plot_file, property_mean, property_std)
+    if len(predictions) >= 2 and all(actual is not None for _, _, actual in predictions):
+        print("Calculating metrics...")
+        metrics = calculate_metrics(predictions, property_mean, property_std)
+
+        print("Metrics:")
+        for key, value in metrics.items():
+            if isinstance(value, float):
+                print(f"  {key}: {value:.4f}")
+            else:
+                print(f"  {key}: {value}")
+
+        metrics_file = os.path.join(output_subdir, f"{dataset_label}_{os.path.splitext(os.path.basename(args.input_file))[0]}_metrics.json")
+        with open(metrics_file, 'w') as f:
+            json.dump(metrics, f, indent=2)
+
+        print(f"Saved metrics to {metrics_file}")
+
+        # 绘制预测值vs实际值散点图
+        plot_file = os.path.join(output_subdir, f"{dataset_label}_{os.path.splitext(os.path.basename(args.input_file))[0]}_pred_vs_actual.png")
+        plot_pred_vs_actual(predictions, plot_file, property_mean, property_std)
+    elif all(actual is not None for _, _, actual in predictions):
+        print("At least two labeled predictions are required for evaluation; saved predictions without metrics or a plot.")
+    else:
+        print("No target RTI values available; saved predictions without evaluation metrics or a predicted-vs-actual plot.")
     
     print("Prediction completed successfully!")
 
