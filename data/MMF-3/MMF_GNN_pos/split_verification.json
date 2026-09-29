@@ -1,0 +1,56 @@
+{
+  "dataname": "MMF_GNN_pos",
+  "split_strategy": "bemis_murcko_scaffold",
+  "random_seed": 1234,
+  "acyclic_scaffold_policy": "canonical_smiles",
+  "holdout": {
+    "counts": {
+      "train": 5043,
+      "dev": 561,
+      "test": 623
+    },
+    "scaffold_counts": {
+      "train": 2135,
+      "dev": 239,
+      "test": 263
+    },
+    "overlap_counts": {
+      "train_dev": 0,
+      "train_test": 0,
+      "dev_test": 0
+    }
+  },
+  "cross_validation": [
+    {
+      "fold": 1,
+      "train_count": 4935,
+      "test_count": 1292,
+      "scaffold_overlap_count": 0
+    },
+    {
+      "fold": 2,
+      "train_count": 4993,
+      "test_count": 1234,
+      "scaffold_overlap_count": 0
+    },
+    {
+      "fold": 3,
+      "train_count": 4993,
+      "test_count": 1234,
+      "scaffold_overlap_count": 0
+    },
+    {
+      "fold": 4,
+      "train_count": 4993,
+      "test_count": 1234,
+      "scaffold_overlap_count": 0
+    },
+    {
+      "fold": 5,
+      "train_count": 4994,
+      "test_count": 1233,
+      "scaffold_overlap_count": 0
+    }
+  ],
+  "passed": true
+}

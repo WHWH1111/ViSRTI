@@ -1,0 +1,20 @@
+{
+  "run_count": 10,
+  "cv_run_count": 10,
+  "prediction_count": 12158,
+  "max_metric_recalculation_delta": 2.3573940239884905e-06,
+  "all_scaffold_overlaps_zero": true,
+  "figure_outputs": [
+    "results/figures/Figure5a_scaffold_oof_categories_pos.svg",
+    "results/figures/Figure5b_scaffold_oof_categories_neg.svg"
+  ],
+  "source_files": [
+    "all_run_metrics.csv",
+    "all_test_predictions.csv",
+    "figure5_source_data.csv",
+    "figure5_summary.csv",
+    "figure5_category_metrics.csv",
+    "figure5_category_predictions.csv",
+    "figure5_category_coverage.csv"
+  ]
+}

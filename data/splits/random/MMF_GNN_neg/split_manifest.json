@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "source_file": "data/MMF-3/MMF_GNN_neg.csv",
+  "source_sha256": "80adf9560a4459ddfe0a2d0ab28da8045599995a20c538fff19e52555d6af920",
+  "target_column": "Pred_RTI_Negative_ESI",
+  "split_strategy": "random",
+  "random_seed": 1234,
+  "test_fraction": 0.1,
+  "acyclic_scaffold_policy": "canonical_smiles",
+  "sample_count": 5933,
+  "train_count": 5339,
+  "test_count": 594,
+  "train_sha256": "9330ede68612731ea03e1e1f85c4a0fbdfe78cff630046779b09b90fe7e455d5",
+  "test_sha256": "5096973f646cddda3bafbf78ed8257172c64aa9a32e32dd94b516b0bc0ee0b62",
+  "train_scaffold_count": 2187,
+  "test_scaffold_count": 347,
+  "scaffold_overlap_count": 168
+}

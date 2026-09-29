@@ -1,0 +1,7 @@
+# Data attribution and reuse
+
+The modeling CSVs and compound-category source data are adapted from the NORMAN Network's **S0 | SUSDAT | Merged NORMAN Suspect List: SusDat** ([all-version DOI](https://doi.org/10.5281/zenodo.2664077)). NORMAN-SLE lists this collection under [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/); see its [license notes](https://gitlab.com/uniluxembourg/lcsb/eci/norman-sle/-/raw/master/docs/LicenseSLE.md). Please credit NORMAN and cite the source dataset when reusing these data. NORMAN's [citation guide](https://gitlab.com/uniluxembourg/lcsb/eci/norman-sle/-/raw/master/docs/CitingSLE.md) also asks users to cite Mohammed Taha et al., *Environmental Sciences Europe* **34**, 104 (2022), [doi:10.1186/s12302-022-00680-6](https://doi.org/10.1186/s12302-022-00680-6).
+
+For this project, source records were filtered and curated into positive- and negative-ionization datasets, descriptor columns were selected for modeling, and split and chemical-category assignments were added. The `Pred_RTI_Positive_ESI` and `Pred_RTI_Negative_ESI` values in the released modeling CSVs match the local NORMAN source export; they are precomputed predictions, not experimental RTI measurements. The exact version and download date of that local export were not retained, so no particular dated Zenodo version is claimed.
+
+The [MIT license](LICENSE) applies to project code. It does not replace the source-data license or the separate [third-party code notices](THIRD_PARTY_NOTICES.md).

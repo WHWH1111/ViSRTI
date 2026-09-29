@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "source_file": "data/MMF-3/MMF_GNN_pos.csv",
+  "source_sha256": "d037d01a42d3bad9b2ffdc36d5b692f6643773980d0b298f91556b390aa6598f",
+  "target_column": "Pred_RTI_Positive_ESI",
+  "split_strategy": "scaffold",
+  "random_seed": 1234,
+  "test_fraction": 0.1,
+  "acyclic_scaffold_policy": "canonical_smiles",
+  "sample_count": 6227,
+  "train_count": 5604,
+  "test_count": 623,
+  "train_sha256": "a0d485d52b55ff6b4c9a26b0368c7fa22a492131748ac0b15b71209bc7b2bbdf",
+  "test_sha256": "b06a1f4d6b95fc6ce9408417a3bbce4622a4f26b7b87a68f4d2fb06c694c16c4",
+  "train_scaffold_count": 2374,
+  "test_scaffold_count": 263,
+  "scaffold_overlap_count": 0
+}

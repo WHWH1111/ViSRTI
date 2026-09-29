@@ -1,0 +1,91 @@
+{
+    "timestamp": "20260915-210547",
+    "model_type": "visnet_v2",
+    "batch_train": 64,
+    "batch_test": 64,
+    "learning_rate": 0.0001,
+    "iteration": 150,
+    "path": "data/MMF-3",
+    "dataname": "MMF_GNN_neg",
+    "split_strategy": "random",
+    "split_seed": 1234,
+    "dev_split_seed": 42,
+    "split_manifest": "data/splits/random/MMF_GNN_neg/split_manifest.json",
+    "debug_size": null,
+    "standardize": true,
+    "standardize_features": true,
+    "property_mean": 452.8374172736733,
+    "property_std": 206.77724769685884,
+    "additional_features_mean": null,
+    "additional_features_std": null,
+    "early_stopping_patience": 20,
+    "checkpoint_selection_metric": "MAE_dev",
+    "test_evaluation": "once_after_model_selection",
+    "scheduler_patience": 10,
+    "scheduler_factor": 0.5,
+    "min_lr": 1e-06,
+    "weight_decay": 1e-05,
+    "loss_function": "l1",
+    "visnet_v2_node_feature_dim": 64,
+    "visnet_v2_physchem_feature_dim": 4,
+    "visnet_v2_toxicity_feature_dim": 4,
+    "visnet_v2_chromato_feature_dim": 2,
+    "visnet_v2_graph_hidden_dim": 512,
+    "visnet_v2_physchem_hidden_dim": 128,
+    "visnet_v2_toxicity_hidden_dim": 128,
+    "visnet_v2_chromato_hidden_dim": 32,
+    "visnet_v2_toxicity_intermediate_dim": 64,
+    "visnet_v2_fusion_hidden_dims": [
+        512,
+        256,
+        128
+    ],
+    "visnet_v2_use_attention": false,
+    "visnet_v2_use_gating": false,
+    "visnet_v2_output_head": "nested_mlp",
+    "visnet_v2_dropout_rate": 0.0,
+    "visnet_v2_feature_level": "graph_physchem_toxicity",
+    "visnet_v2_physchem_mask": null,
+    "visnet_v2_toxicity_mask": null,
+    "visnet_v2_chromato_mask": null,
+    "standardization_info": {
+        "physchem": {
+            "mean": [
+                306.5606689453125,
+                2.7407732009887695,
+                2.6929163932800293,
+                16132.9833984375
+            ],
+            "std": [
+                116.52702331542969,
+                2.3308684825897217,
+                2.0773372650146484,
+                58534.3671875
+            ]
+        },
+        "toxicity": {
+            "mean": [
+                3.781135320663452,
+                4.320492267608643,
+                5.319162845611572,
+                4.729944705963135
+            ],
+            "std": [
+                0.850949764251709,
+                1.1420451402664185,
+                1.2171416282653809,
+                1.312892198562622
+            ]
+        },
+        "chromato": {
+            "mean": [
+                0.580029308795929,
+                0.13837513327598572
+            ],
+            "std": [
+                0.4042438268661499,
+                0.2906932234764099
+            ]
+        }
+    }
+}

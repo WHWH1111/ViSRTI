@@ -1,0 +1,86 @@
+{
+  "status": "frozen",
+  "selection_partition": "development",
+  "selection_metric": "mae",
+  "candidate_scope": "user_requested_GP_positive_GPT_negative",
+  "candidate_scope_chosen_after_prior_test_inspection": true,
+  "test_previously_inspected": true,
+  "test_used_for_mask_stopping": false,
+  "scaffold_interpretation": "fixed_configuration_structural_robustness_not_nested_selection_cv",
+  "publication_export": true,
+  "original_selection_manifest_sha256": "f7904490a884b8cbfff9d33c2a916ce0dfb24ef37008f77ca880ba471202f382",
+  "models": {
+    "pos": {
+      "feature_code": "GP",
+      "model_label": "ViSRTI-GP (mask Koc+LogP)",
+      "selected_step": 2,
+      "removed_features": [
+        "Koc",
+        "LogP"
+      ],
+      "retained_features": [
+        "Monoiso_Mass",
+        "LogKow"
+      ],
+      "physchem_mask": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "toxicity_mask": null,
+      "checkpoint": "../../checkpoints/pos_GP_mask_Koc_LogP/best.pt",
+      "training_params": "../../checkpoints/pos_GP_mask_Koc_LogP/training_params.json",
+      "experiment": "../../checkpoints/pos_GP_mask_Koc_LogP",
+      "checkpoint_sha256": "fe0250d3e78b1e0ad651d720a95afd3c7d9a7a50b1edb80f6cc050dde9eec385",
+      "training_params_sha256": "38c5771de5a9ea2cc699f5d0dc36a6323052c346c7f8c5aacfb1d0828dc77974",
+      "original_training_params_sha256": "6bb1797d0fe1d8d0cb95067302f8be176f470f546a814a6af4574f120b03c85b",
+      "development_metrics": {
+        "mae": 42.097413828877,
+        "rmse": 55.30803512230061,
+        "r2": 0.9370887362754299,
+        "pcc": 0.968141461880227
+      }
+    },
+    "neg": {
+      "feature_code": "GPT",
+      "model_label": "ViSRTI-GPT",
+      "selected_step": 0,
+      "removed_features": [],
+      "retained_features": [
+        "Monoiso_Mass",
+        "LogKow",
+        "LogP",
+        "Koc",
+        "IC50",
+        "48h-LC50",
+        "72h-EC50",
+        "96h-LC50"
+      ],
+      "physchem_mask": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "toxicity_mask": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "checkpoint": "../../checkpoints/neg_GPT/best.pt",
+      "training_params": "../../checkpoints/neg_GPT/training_params.json",
+      "experiment": "../../checkpoints/neg_GPT",
+      "checkpoint_sha256": "fbd3c865948cbab87c7c3a063f8ddfc32dfa74cba6d9fe04b8ec1350d15eed1a",
+      "training_params_sha256": "9b725a149a053562480f5c7876c53d2d20cd5988e92192adb820459e7b559a98",
+      "original_training_params_sha256": "3c775a967fd762fae3894940a818b53c61e248f7ba3ef1f7acc9101d648d5001",
+      "development_metrics": {
+        "mae": 40.42612053183521,
+        "rmse": 57.1664139071426,
+        "r2": 0.9160088266116534,
+        "pcc": 0.9571155184468892
+      }
+    }
+  }
+}

@@ -1,0 +1,101 @@
+﻿mode,model,category,category_label,n,feature,mean_absolute_shap,normalized_mean_absolute_shap,constant_row
+pos,ViSRTI-GP (mask Koc+LogP),Sulfur_containing,Organosulfur compounds,167,Monoiso_Mass,0.2536356908092861,0.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Sulfur_containing,Organosulfur compounds,167,LogKow,0.27364146591528055,1.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Phosphorus_containing,Organophosphorus compounds,19,Monoiso_Mass,0.28222037125133764,1.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Phosphorus_containing,Organophosphorus compounds,19,LogKow,0.2515410410215784,0.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Oxygen_containing,Oxygen-containing compounds,426,Monoiso_Mass,0.27611577078771665,1.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Oxygen_containing,Oxygen-containing compounds,426,LogKow,0.2431891036126708,0.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Nitrogen_containing,Nitrogen-containing compounds,345,Monoiso_Mass,0.28150402210463865,1.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Nitrogen_containing,Nitrogen-containing compounds,345,LogKow,0.2216222882574505,0.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Medium_hydrophobic,Moderately hydrophobic compounds,217,Monoiso_Mass,0.3073872192350376,1.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Medium_hydrophobic,Moderately hydrophobic compounds,217,LogKow,0.0892354373943918,0.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Hydrophilic,Hydrophilic compounds,247,Monoiso_Mass,0.27760709859199845,0.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Hydrophilic,Hydrophilic compounds,247,LogKow,0.28026973111352316,1.0,False
+pos,ViSRTI-GP (mask Koc+LogP),High_hydrophobic,Highly hydrophobic compounds,159,Monoiso_Mass,0.2637376176089388,0.0,False
+pos,ViSRTI-GP (mask Koc+LogP),High_hydrophobic,Highly hydrophobic compounds,159,LogKow,0.3389645426588297,1.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Halogen_containing,Halogenated compounds,191,Monoiso_Mass,0.289738965200331,1.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Halogen_containing,Halogenated compounds,191,LogKow,0.21945693703515806,0.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Aromatic,Aromatic compounds,519,Monoiso_Mass,0.28230953829575295,1.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Aromatic,Aromatic compounds,519,LogKow,0.2300585526482618,0.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Aliphatic,Aliphatic compounds,104,Monoiso_Mass,0.2950731802937718,1.0,False
+pos,ViSRTI-GP (mask Koc+LogP),Aliphatic,Aliphatic compounds,104,LogKow,0.2219777592108585,0.0,False
+neg,ViSRTI-GPT,Sulfur_containing,Organosulfur compounds,171,Monoiso_Mass,0.054198314283262695,0.5327855779020325,False
+neg,ViSRTI-GPT,Sulfur_containing,Organosulfur compounds,171,LogKow,0.08393945582869183,0.8809027613613398,False
+neg,ViSRTI-GPT,Sulfur_containing,Organosulfur compounds,171,LogP,0.09411444287421408,1.0,False
+neg,ViSRTI-GPT,Sulfur_containing,Organosulfur compounds,171,Koc,0.0086801610904604,0.0,False
+neg,ViSRTI-GPT,Sulfur_containing,Organosulfur compounds,171,IC50,0.049202678186878006,0.47431214086853163,False
+neg,ViSRTI-GPT,Sulfur_containing,Organosulfur compounds,171,48h-LC50,0.04645821334923027,0.442188445551535,False
+neg,ViSRTI-GPT,Sulfur_containing,Organosulfur compounds,171,72h-EC50,0.0626911127966395,0.6321929625731331,False
+neg,ViSRTI-GPT,Sulfur_containing,Organosulfur compounds,171,96h-LC50,0.03988565124034343,0.36525724215565547,False
+neg,ViSRTI-GPT,Phosphorus_containing,Organophosphorus compounds,26,Monoiso_Mass,0.19699916623316835,1.0,False
+neg,ViSRTI-GPT,Phosphorus_containing,Organophosphorus compounds,26,LogKow,0.09670741637673126,0.4541829107483569,False
+neg,ViSRTI-GPT,Phosphorus_containing,Organophosphorus compounds,26,LogP,0.13981724562017722,0.6887992331225825,False
+neg,ViSRTI-GPT,Phosphorus_containing,Organophosphorus compounds,26,Koc,0.013253087498358601,0.0,False
+neg,ViSRTI-GPT,Phosphorus_containing,Organophosphorus compounds,26,IC50,0.0743256981042571,0.33237504183172867,False
+neg,ViSRTI-GPT,Phosphorus_containing,Organophosphorus compounds,26,48h-LC50,0.046170855022711746,0.17914813611811267,False
+neg,ViSRTI-GPT,Phosphorus_containing,Organophosphorus compounds,26,72h-EC50,0.13285453559427754,0.6509061250146889,False
+neg,ViSRTI-GPT,Phosphorus_containing,Organophosphorus compounds,26,96h-LC50,0.0522084770409339,0.2120066442277519,False
+neg,ViSRTI-GPT,Oxygen_containing,Oxygen-containing compounds,424,Monoiso_Mass,0.15688412650109132,1.0,False
+neg,ViSRTI-GPT,Oxygen_containing,Oxygen-containing compounds,424,LogKow,0.08829161406213963,0.5148960323582717,False
+neg,ViSRTI-GPT,Oxygen_containing,Oxygen-containing compounds,424,LogP,0.11537320394088772,0.7064240320349016,False
+neg,ViSRTI-GPT,Oxygen_containing,Oxygen-containing compounds,424,Koc,0.015486576667793638,0.0,False
+neg,ViSRTI-GPT,Oxygen_containing,Oxygen-containing compounds,424,IC50,0.06404713346264222,0.3434328024219629,False
+neg,ViSRTI-GPT,Oxygen_containing,Oxygen-containing compounds,424,48h-LC50,0.04038123215884554,0.1760614347306707,False
+neg,ViSRTI-GPT,Oxygen_containing,Oxygen-containing compounds,424,72h-EC50,0.09542533867261462,0.5653475756762809,False
+neg,ViSRTI-GPT,Oxygen_containing,Oxygen-containing compounds,424,96h-LC50,0.049572521743772587,0.24106460908385596,False
+neg,ViSRTI-GPT,Nitrogen_containing,Nitrogen-containing compounds,314,Monoiso_Mass,0.14224745068869404,1.0,False
+neg,ViSRTI-GPT,Nitrogen_containing,Nitrogen-containing compounds,314,LogKow,0.07597305331323262,0.4950674488237629,False
+neg,ViSRTI-GPT,Nitrogen_containing,Nitrogen-containing compounds,314,LogP,0.11367134867980758,0.7822838884784507,False
+neg,ViSRTI-GPT,Nitrogen_containing,Nitrogen-containing compounds,314,Koc,0.010993489697120717,0.0,False
+neg,ViSRTI-GPT,Nitrogen_containing,Nitrogen-containing compounds,314,IC50,0.060293194881030576,0.3756054660100884,False
+neg,ViSRTI-GPT,Nitrogen_containing,Nitrogen-containing compounds,314,48h-LC50,0.03811604901272032,0.20664183473549344,False
+neg,ViSRTI-GPT,Nitrogen_containing,Nitrogen-containing compounds,314,72h-EC50,0.09592666172734532,0.6470903536059945,False
+neg,ViSRTI-GPT,Nitrogen_containing,Nitrogen-containing compounds,314,96h-LC50,0.04833164592036587,0.28447260517831013,False
+neg,ViSRTI-GPT,Medium_hydrophobic,Moderately hydrophobic compounds,212,Monoiso_Mass,0.14551196317728796,1.0,False
+neg,ViSRTI-GPT,Medium_hydrophobic,Moderately hydrophobic compounds,212,LogKow,0.03145285285114052,0.1344330687538252,False
+neg,ViSRTI-GPT,Medium_hydrophobic,Moderately hydrophobic compounds,212,LogP,0.060027885550870755,0.35128206304669535,False
+neg,ViSRTI-GPT,Medium_hydrophobic,Moderately hydrophobic compounds,212,Koc,0.013738086185552431,0.0,False
+neg,ViSRTI-GPT,Medium_hydrophobic,Moderately hydrophobic compounds,212,IC50,0.04378341756043309,0.2280067344210037,False
+neg,ViSRTI-GPT,Medium_hydrophobic,Moderately hydrophobic compounds,212,48h-LC50,0.03412297486940701,0.1546959773000612,False
+neg,ViSRTI-GPT,Medium_hydrophobic,Moderately hydrophobic compounds,212,72h-EC50,0.08001797885117516,0.5029820339108608,False
+neg,ViSRTI-GPT,Medium_hydrophobic,Moderately hydrophobic compounds,212,96h-LC50,0.03954312928969317,0.19582821491819014,False
+neg,ViSRTI-GPT,Hydrophilic,Hydrophilic compounds,220,Monoiso_Mass,0.14299611212066554,1.0,False
+neg,ViSRTI-GPT,Hydrophilic,Hydrophilic compounds,220,LogKow,0.10277499611262568,0.6959343045208954,False
+neg,ViSRTI-GPT,Hydrophilic,Hydrophilic compounds,220,LogP,0.13817171200755562,0.9635282478146799,False
+neg,ViSRTI-GPT,Hydrophilic,Hydrophilic compounds,220,Koc,0.010718395146822074,0.0,False
+neg,ViSRTI-GPT,Hydrophilic,Hydrophilic compounds,220,IC50,0.08009860404783839,0.5245041303119521,False
+neg,ViSRTI-GPT,Hydrophilic,Hydrophilic compounds,220,48h-LC50,0.042218250052535704,0.2381342498672123,False
+neg,ViSRTI-GPT,Hydrophilic,Hydrophilic compounds,220,72h-EC50,0.10879306466884894,0.7414300138051226,False
+neg,ViSRTI-GPT,Hydrophilic,Hydrophilic compounds,220,96h-LC50,0.05534094683867726,0.33733989906008754,False
+neg,ViSRTI-GPT,High_hydrophobic,Highly hydrophobic compounds,162,Monoiso_Mass,0.15672097702791102,1.0,False
+neg,ViSRTI-GPT,High_hydrophobic,Highly hydrophobic compounds,162,LogKow,0.11201465972229785,0.6774096827716687,False
+neg,ViSRTI-GPT,High_hydrophobic,Highly hydrophobic compounds,162,LogP,0.1508093963266927,0.957343417918088,False
+neg,ViSRTI-GPT,High_hydrophobic,Highly hydrophobic compounds,162,Koc,0.01813554864392832,0.0,False
+neg,ViSRTI-GPT,High_hydrophobic,Highly hydrophobic compounds,162,IC50,0.058622891800975685,0.2921471876889387,False
+neg,ViSRTI-GPT,High_hydrophobic,Highly hydrophobic compounds,162,48h-LC50,0.046557228364060066,0.2050841856286865,False
+neg,ViSRTI-GPT,High_hydrophobic,Highly hydrophobic compounds,162,72h-EC50,0.0903923012946309,0.5213878074576405,False
+neg,ViSRTI-GPT,High_hydrophobic,Highly hydrophobic compounds,162,96h-LC50,0.0527366888814532,0.24967372573727223,False
+neg,ViSRTI-GPT,Halogen_containing,Halogenated compounds,228,Monoiso_Mass,0.16656065581297425,1.0,False
+neg,ViSRTI-GPT,Halogen_containing,Halogenated compounds,228,LogKow,0.0607632361011438,0.31067916031409887,False
+neg,ViSRTI-GPT,Halogen_containing,Halogenated compounds,228,LogP,0.10560580755543642,0.6028499816133588,False
+neg,ViSRTI-GPT,Halogen_containing,Halogenated compounds,228,Koc,0.013079992497995189,0.0,False
+neg,ViSRTI-GPT,Halogen_containing,Halogenated compounds,228,IC50,0.05305058957092672,0.26042757575853254,False
+neg,ViSRTI-GPT,Halogen_containing,Halogenated compounds,228,48h-LC50,0.04019661299212179,0.1766777645368707,False
+neg,ViSRTI-GPT,Halogen_containing,Halogenated compounds,228,72h-EC50,0.09044485845034722,0.5040691399253391,False
+neg,ViSRTI-GPT,Halogen_containing,Halogenated compounds,228,96h-LC50,0.04704572059957802,0.22130297959344247,False
+neg,ViSRTI-GPT,Aromatic,Aromatic compounds,513,Monoiso_Mass,0.13807087128867704,1.0,False
+neg,ViSRTI-GPT,Aromatic,Aromatic compounds,513,LogKow,0.07625758993886049,0.5084705763422582,False
+neg,ViSRTI-GPT,Aromatic,Aromatic compounds,513,LogP,0.10882080315365486,0.7674080906497646,False
+neg,ViSRTI-GPT,Aromatic,Aromatic compounds,513,Koc,0.01231383951257341,0.0,False
+neg,ViSRTI-GPT,Aromatic,Aromatic compounds,513,IC50,0.057432688904522175,0.358777944697978,False
+neg,ViSRTI-GPT,Aromatic,Aromatic compounds,513,48h-LC50,0.0402209067290058,0.22191257874245804,False
+neg,ViSRTI-GPT,Aromatic,Aromatic compounds,513,72h-EC50,0.09219244782646585,0.6351820425923173,False
+neg,ViSRTI-GPT,Aromatic,Aromatic compounds,513,96h-LC50,0.04661244976456484,0.2727371167049831,False
+neg,ViSRTI-GPT,Aliphatic,Aliphatic compounds,81,Monoiso_Mass,0.20822373046372572,1.0,False
+neg,ViSRTI-GPT,Aliphatic,Aliphatic compounds,81,LogKow,0.10252759488390452,0.42827433718529156,False
+neg,ViSRTI-GPT,Aliphatic,Aliphatic compounds,81,LogP,0.14481158722896445,0.6569945587649606,False
+neg,ViSRTI-GPT,Aliphatic,Aliphatic compounds,81,Koc,0.02335161004943458,0.0,False
+neg,ViSRTI-GPT,Aliphatic,Aliphatic compounds,81,IC50,0.08565082070462264,0.33698542817369104,False
+neg,ViSRTI-GPT,Aliphatic,Aliphatic compounds,81,48h-LC50,0.04235841391197403,0.1028105472039048,False
+neg,ViSRTI-GPT,Aliphatic,Aliphatic compounds,81,72h-EC50,0.10181620763393961,0.4244263408061149,False
+neg,ViSRTI-GPT,Aliphatic,Aliphatic compounds,81,96h-LC50,0.06406553806787187,0.22022751687598424,False
