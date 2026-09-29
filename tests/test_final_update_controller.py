@@ -37,19 +37,27 @@ def fake_processes(controller, monkeypatch, calibration_complete, fail_stage=Non
     return calls
 
 
-def test_missing_calibration_does_not_block_scaffold(controller, monkeypatch):
+@pytest.mark.parametrize("resume", (False, True))
+def test_missing_calibration_does_not_block_scaffold(controller, monkeypatch, resume):
     calls = fake_processes(controller, monkeypatch, False)
-    controller.run(SimpleNamespace(resume=False))
+    controller.run(SimpleNamespace(resume=resume))
     state = controller.read_json(controller.ROOT / "outputs/final_masked_models_seed1234/run_status.json")
     assert "scaffold" in calls and "package_final_model_results.py" in calls
+    assert "predict_calibration_samples.py" not in calls
     assert "plot_calibration_results.py" not in calls
     assert "calibration_input_check_and_prediction" not in state["completed_stages"]
     assert state["status"] == "computed_pending_visual_review_and_calibration_inputs"
+    calibration = controller.ROOT / "outputs/final_masked_models_seed1234/calibration"
+    assert controller.read_json(calibration / "run_status.json")["status"] == "missing_inputs"
+    assert "input_file" in (calibration / "missing_inputs.csv").read_text(encoding="utf-8-sig")
 
 
 def test_resume_after_inputs_only_runs_calibration_and_repackages(controller, monkeypatch):
     fake_processes(controller, monkeypatch, False)
     controller.run(SimpleNamespace(resume=False))
+    input_file = controller.ROOT / "修改部分内容/07_最终模型后续分析/03_校准输入待补/图6绘制所需的23个物质输入_待作者确认.csv"
+    input_file.parent.mkdir(parents=True)
+    input_file.write_text("compound_id\n", encoding="utf-8")
     calls = fake_processes(controller, monkeypatch, True)
     controller.run(SimpleNamespace(resume=True))
     assert calls == ["predict_calibration_samples.py", "plot_calibration_results.py", "package_final_model_results.py"]
@@ -62,6 +70,9 @@ def test_stage_failure_resumes_without_repeating_predictions(controller, monkeyp
     fake_processes(controller, monkeypatch, True, fail_stage="plot_final_masked_models.py")
     with pytest.raises(RuntimeError, match="fixed_test_figures failed"):
         controller.run(SimpleNamespace(resume=False))
+    input_file = controller.ROOT / "修改部分内容/07_最终模型后续分析/03_校准输入待补/图6绘制所需的23个物质输入_待作者确认.csv"
+    input_file.parent.mkdir(parents=True)
+    input_file.write_text("compound_id\n", encoding="utf-8")
     calls = fake_processes(controller, monkeypatch, True)
     controller.run(SimpleNamespace(resume=True))
     assert "evaluate_final_masked_models.py" not in calls

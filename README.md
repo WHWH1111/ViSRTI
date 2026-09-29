@@ -54,6 +54,6 @@ The released baseline CSVs allow the reported predictions and metrics to be chec
 
 ## Scope of experimental data
 
-This repository does not supply an independent experimental RTI benchmark. The 21 calibration standards and BaP/BeP case information are described in the Supporting Information; no client-supplied 23-compound workbook is included here. The prediction and calibration code is provided, but reproducing laboratory-specific RT–RTI calibration requires confirmed experimental inputs.
+This repository does not supply an independent experimental RTI benchmark. The 21 calibration standards and BaP/BeP case information are described in the Supporting Information; the 23-compound experimental workbook is not included here. The prediction and calibration code is provided, but reproducing laboratory-specific RT–RTI calibration requires confirmed experimental inputs.
 
 Project code is distributed under the [MIT license](LICENSE). The NORMAN-derived data carry separate [source attribution and CC BY 4.0 reuse terms](DATA_ATTRIBUTION.md); [third-party code notices](THIRD_PARTY_NOTICES.md) are also included.

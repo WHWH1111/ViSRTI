@@ -123,11 +123,25 @@ def run(args):
                                        "--run-root", str(output), "--output-dir", str(delivery)])
         previously_missing_calibration = (output / "calibration/run_status.json").exists() and (
             read_json(output / "calibration/run_status.json")["status"] == "missing_inputs")
-        calibration_code = execute("calibration_input_check_and_prediction", [
-            sys.executable, "-u", str(ROOT / "scripts/data-val/predict_calibration_samples.py"),
-            "--selection-manifest", str(output / "selection_manifest.json"),
-            "--input", str(delivery / "03_校准输入待补/图6绘制所需的23个物质输入_待作者确认.csv"),
-            "--output-dir", str(output / "calibration"), "--device", "cuda"], accepted_codes=(0, 2))
+        calibration_input = delivery / "03_校准输入待补/图6绘制所需的23个物质输入_待作者确认.csv"
+        if calibration_input.is_file():
+            calibration_code = execute("calibration_input_check_and_prediction", [
+                sys.executable, "-u", str(ROOT / "scripts/data-val/predict_calibration_samples.py"),
+                "--selection-manifest", str(output / "selection_manifest.json"),
+                "--input", str(calibration_input),
+                "--output-dir", str(output / "calibration"), "--device", "cuda"], accepted_codes=(0, 2))
+        else:
+            calibration_dir = output / "calibration"
+            calibration_dir.mkdir(exist_ok=True)
+            (calibration_dir / "missing_inputs.csv").write_text(
+                "compound_id,field,reason\n,input_file,Calibration input CSV not provided\n",
+                encoding="utf-8-sig")
+            (calibration_dir / "run_status.json").write_text(json.dumps({
+                "status": "missing_inputs", "prediction_generated": False, "issues": 1,
+                "input_file": str(calibration_input.relative_to(ROOT))}, indent=2) + "\n", encoding="utf-8")
+            state["waiting_for_inputs"] = "calibration_input_check_and_prediction"
+            save()
+            calibration_code = 2
         if calibration_code == 0:
             state.pop("waiting_for_inputs", None)
             if previously_missing_calibration and "assemble_delivery" in state["completed_stages"]:
